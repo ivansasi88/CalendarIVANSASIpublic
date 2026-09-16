@@ -1,0 +1,29 @@
+name: Pubblica APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Scarica repository
+        uses: actions/checkout@v4
+
+      - name: Crea o aggiorna la Release latest
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view latest >/dev/null 2>&1; then
+            gh release upload latest Calendar-IVAN-SASI.apk --clobber
+          else
+            gh release create latest Calendar-IVAN-SASI.apk \
+              --target "$GITHUB_SHA" \
+              --title "Calendar IVAN SASI - latest" \
+              --notes "Ultimo APK firmato di Calendar IVAN SASI."
+          fi
